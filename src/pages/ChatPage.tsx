@@ -1,10 +1,8 @@
+import { useState } from "react";
 import { ChatMessage } from "~/components/ChatMessage";
 import { Button } from "~/components/ui/button";
 import { Textarea } from "~/components/ui/textarea";
-
-const handleSubmit = async () => {
-    alert("chat");
-  };
+import ollama from "ollama";
 
 type Message = {
     role: "user" | "assistant";
@@ -22,10 +20,36 @@ const chatHistory: Message[] = [
   ];
 
 const ChatPage = () => {
+  const [messageInput, setMessageInput] = useState("");
+  const [streamMessage, setStreamMessage] = useState("");
+
+  const handleSubmit = async () => {
+    alert("chat");
+
+    const stream = await ollama.chat({
+      model: "deepseek-r1:1.5b",
+      messages: [
+        {
+          role: "user",
+          content: messageInput.trim(),
+        }
+      ],
+      stream: true,
+    });
+
+    let fullContent = "" 
+
+    for await(const part of stream ) {
+      const messageContent = part.message.content;
+      fullContent += messageContent
+      setStreamMessage(fullContent)
+    }
+  };
+
     return (
         <div className="flex flex-col flex-1">
           <header className="flex items-center px-4 h-16 border-b">
-            <h1 className="text-xl font-bold ml-4">AI Chat Dashboard</h1>
+            <h1 className="text-xl font-bold ml-4">Zeo Ai - DeepseekR1</h1>
           </header>
           <main className="flex-1 overflow-auto p-4 w-full">
             <div className="mx-auto space-y-4 pb-20 max-w-screen-md">
@@ -36,6 +60,11 @@ const ChatPage = () => {
                   content={message.content}
                 />
               ))}
+
+              {
+                !!streamMessage && 
+                <ChatMessage role="assistant" content={streamMessage}/>
+              }
             </div>
           </main>
           <footer className="border-t p-4">
@@ -44,6 +73,8 @@ const ChatPage = () => {
                 className="flex-1"
                 placeholder="Type your message here..."
                 rows={5}
+                value={messageInput}
+                onChange={e => setMessageInput(e.target.value)}
               />
               <Button onClick={handleSubmit} type="button">
                 Send
