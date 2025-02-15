@@ -17,6 +17,11 @@ class ChatDB extends Dexie {
             threads: "id, title, created_at, updated_at"
         })
 
-        this.threads.hook("creating")
+        this.threads.hook("creating", (_, obj) => {
+            obj.created_at = new Date();
+            obj.updated_at = new Date();
+        })
     }
 }
+
+export const db = new ChatDB();
