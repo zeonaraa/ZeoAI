@@ -22,6 +22,10 @@ class ChatDB extends Dexie {
             obj.updated_at = new Date();
         })
     }
+
+    async createThread(title: string) {
+
+    }
 }
 
 export const db = new ChatDB();
