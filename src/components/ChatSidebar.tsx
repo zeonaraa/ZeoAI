@@ -19,9 +19,9 @@ import { Label } from "./ui/label";
 import { Input } from "./ui/input";
 import { db } from "~/lib/dexie";
 import { useLiveQuery } from "dexie-react-hooks"
+import { Link } from "react-router";
 
 export const ChatSidebar = () => {
-  const [activeChat, setActiveChat] = useState<string | null>(null);
   const [dialogIsOpen, setDialogIsOpen] = useState(false);
   const [textInput, setTextInput] = useState("");
   const { setTheme, theme } = useTheme();
@@ -79,12 +79,9 @@ export const ChatSidebar = () => {
             <SidebarMenu>
               {threads?.map((thread) => (
                 <SidebarMenuItem key={thread.id}>
-                  <SidebarMenuButton
-                    onClick={() => setActiveChat(thread.id)}
-                    isActive={activeChat === thread.id}
-                  >
-                    {thread.title}
-                  </SidebarMenuButton>
+                  <Link to={`/thread/${thread.id}`}>
+                  <SidebarMenuButton>{thread.title}</SidebarMenuButton>
+                  </Link>
                 </SidebarMenuItem>
               ))}
             </SidebarMenu>
